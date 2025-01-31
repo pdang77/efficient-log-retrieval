@@ -3,38 +3,56 @@ import os
 import re
 
 def extract_logs(file_path, date, output_dir="output"):
+    """Extract logs for a specific date and save them to an output file."""
+    
+    # Validate log file existence
     if not os.path.exists(file_path):
-        print("Error: Log file not found.")
-        sys.exit(1)
-    
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    
+        print(f"Error: Log file '{file_path}' not found.")
+        return  # No abrupt exit
+
+    # Create output directory if needed
+    os.makedirs(output_dir, exist_ok=True)
+
     output_file = os.path.join(output_dir, f"output_{date}.txt")
-    
+
+    # Pattern to match logs starting with the given date
+    pattern = re.compile(rf"^{re.escape(date)}T\d{{2}}:\d{{2}}:\d{{2}}(?:\.\d+)?")
+
     try:
-        with open(file_path, "r", encoding="utf-8") as file, open(output_file, "w", encoding="utf-8") as output:
+        found_logs = False  # Track if any logs were found
+
+        with open(file_path, "r", encoding="utf-8", errors="ignore") as file, \
+             open(output_file, "w", encoding="utf-8") as output:
+            
             for line in file:
-                if line.startswith(date):
+                if pattern.match(line):
                     output.write(line)
-        print(f"Logs for {date} saved to {output_file}")
+                    found_logs = True
+
+        if found_logs:
+            print(f"✅ Logs for {date} saved to: {output_file}")
+        else:
+            print(f"⚠ No logs found for {date}. Check your input.")
+
     except Exception as e:
-        print(f"An error occurred: {e}")
-        sys.exit(1)
+        print(f"❌ Error while processing logs: {e}")
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python extract_logs.py YYYY-MM-DD")
         sys.exit(1)
-    
+
     date_arg = sys.argv[1]
-    
+
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date_arg):
         print("Error: Invalid date format. Use YYYY-MM-DD.")
         sys.exit(1)
-    
-    log_file = "test_logs.log"  # Ensure this file exists or provide the correct path
+
+    log_file = "logs_2024.log"  # Update this if your log file has a different name
     extract_logs(log_file, date_arg)
+
+    
+   
 
     
    
