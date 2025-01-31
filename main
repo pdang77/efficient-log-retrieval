@@ -25,4 +25,10 @@ if __name__ == "__main__":
     
     log_file = "test_logs.log"  # Ensure this file exists or provide the correct path
     date_arg = sys.argv[1]
-    extract_logs(log_file, date_arg)
+    
+    if not date_arg.isdigit() and len(date_arg) == 10 and date_arg[4] == '-' and date_arg[7] == '-':
+        extract_logs(log_file, date_arg)
+    else:
+        print("Error: Invalid date format. Use YYYY-MM-DD.")
+        sys.exit(1)
+
