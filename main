@@ -1,0 +1,28 @@
+import sys
+import os
+
+def extract_logs(file_path, date, output_dir="output"):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    
+    output_file = os.path.join(output_dir, f"output_{date}.txt")
+    
+    try:
+        with open(file_path, "r", encoding="utf-8") as file, open(output_file, "w", encoding="utf-8") as output:
+            for line in file:
+                if line.startswith(date):
+                    output.write(line)
+        print(f"Logs for {date} saved to {output_file}")
+    except FileNotFoundError:
+        print("Error: Log file not found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python extract_logs.py YYYY-MM-DD")
+        sys.exit(1)
+    
+    log_file = "test_logs.log"  # Ensure this file exists or provide the correct path
+    date_arg = sys.argv[1]
+    extract_logs(log_file, date_arg)
